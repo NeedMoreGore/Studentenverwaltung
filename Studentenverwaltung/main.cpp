@@ -219,55 +219,64 @@ void addStudent(int &occSpace)
 
 void importStudentData(int &occSpace, const string filename)
 {
-	ifstream csv(filename);
+	ifstream csv;
 	string value;
 	char c;
 
+	csv.open(filename);
+
 	cout << " -------------------------- \n| Studierende importieren: |\n -------------------------- " << endl << endl;
 
-	//clear array
-	for (int i = 0; i < STUDENT_COUNT_MAX; i++)
+	if (csv.good())
 	{
-		students[i].firstName = "";
-		students[i].lastName = "";
-		students[i].sex = '0';
-		students[i].matriculationNumber = -1;
-		students[i].finalGrade = -1;
-	}
 
-	//read from csv
-	for (int i = 0; i < STUDENT_COUNT_MAX; i++)
-	{
-		getline(csv, value, ';');
-		students[i].firstName = value;
-
-		if (csv.eof() != 0) //break, if getline hits the end of file
+		//clear array
+		for (int i = 0; i < STUDENT_COUNT_MAX; i++)
 		{
-			csv.close();
-			occSpace = i;
-			break;
+			students[i].firstName = "";
+			students[i].lastName = "";
+			students[i].sex = '0';
+			students[i].matriculationNumber = -1;
+			students[i].finalGrade = -1;
 		}
 
-		getline(csv, value, ';');
-		students[i].lastName = value;
-
-		//in der Beispieldatei "data.csv" fehlt ein Wert für das Geschlecht (Absicht oder Fehler?) deswegen checken
-		if (csv.peek() == 'm' || csv.peek() == 'w') //check next character's value
+		//read from csv
+		for (int i = 0; i < STUDENT_COUNT_MAX; i++)
 		{
+			//get first name
+			getline(csv, value, ';');
+			students[i].firstName = value;
+
+			if (csv.eof() != 0) //break, if getline hits the end of file
+			{
+				csv.close();
+				occSpace = i;
+				break;
+			}
+
+			//get last name
+			getline(csv, value, ';');
+			students[i].lastName = value;
+
+			//get sex
 			csv.get(c);
 			students[i].sex = c;
 			csv.ignore(1);
+
+			//get matriculation number
+			getline(csv, value, ';');
+			students[i].matriculationNumber = atoi(value.c_str());
+
+			//get final grade
+			getline(csv, value, ';');
+			students[i].finalGrade = atof(value.c_str());
 		}
 
-		getline(csv, value, ';');
-		students[i].matriculationNumber = atoi(value.c_str());
-
-		getline(csv, value, ';');
-		students[i].finalGrade = atof(value.c_str());
+		csv.close();
+		cout << "Datei \"" << filename << "\" erfolgreicht importiert." << endl << endl;
 	}
-
-	csv.close();
-	cout << "Datei \"" << filename << "\" erfolgreicht importiert." << endl << endl;
+	else
+		cout << "FEHLER: Datei \"" << filename << "\" konnte nicht importiert werden." << endl << endl;
 }
 
 //
@@ -292,9 +301,13 @@ void exportStudentData(int occSpace, const string filename)
 			<< students[i].matriculationNumber << ";"
 			<< students[i].finalGrade << ";";
 	}
-	csv.close();
 
-	cout << "Datei \"" << filename << "\" erfolgreicht exportiert." << endl << endl;
+	if(csv.good())
+		cout << "Datei \"" << filename << "\" erfolgreicht exportiert." << endl << endl;
+	else
+		cout << "FEHLER: Datei \"" << filename << "\" konnte nicht exportiert werden." << endl << endl;
+
+	csv.close();
 }
 
 //
