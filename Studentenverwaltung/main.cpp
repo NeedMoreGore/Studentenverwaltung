@@ -49,7 +49,6 @@ void saveStudentData(Student student, int &occSpace);
 
 
 
-
 int main()
 {
 	//Variables
