@@ -30,8 +30,8 @@ struct Student //student infos
 Student students[STUDENT_COUNT_MAX];
 
 //Prototypes
-int displayMainMenu();
-void validateInput(int selection);
+void displayMainMenu(int &selection);
+void validateInput(const int selection);
 void listAllStudents(const int occSpace);
 void importStudentData(int &occSpace, const string filename = FILENAME_CSV_IMPORT_STUDENTS);
 void pauseSystem();
@@ -60,7 +60,7 @@ int main()
 
 	while (true)
 	{
-		selection = displayMainMenu(); //
+		displayMainMenu(selection); //
 
 		switch (selection)
 		{
@@ -111,10 +111,8 @@ int main()
 //
 //
 
-int displayMainMenu()
+void displayMainMenu(int &selection)
 {
-	int selection = 0;
-
 	do
 	{
 		displayTitle();
@@ -133,8 +131,6 @@ int displayMainMenu()
 
 		validateInput(selection);
 	} while (selection < SELECTION_MIN || selection > SELECTION_MAX); //display selection menu until 7 is pressed
-
-	return selection;
 }
 
 //
@@ -371,7 +367,7 @@ void saveStudentData(Student student, int &occSpace)
 //
 //
 
-void validateInput(int selection)
+void validateInput(const int selection)
 {
 	if (!cin.good() || (selection < SELECTION_MIN || selection > SELECTION_MAX))
 	{
