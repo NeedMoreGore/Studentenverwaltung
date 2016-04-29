@@ -267,7 +267,7 @@ void importStudentData(int &occSpace, const string filename)
 	}
 
 	csv.close();
-	cout << "Datei \"" << FILENAME_CSV_IMPORT_STUDENTS << "\" erfolgreicht importiert." << endl << endl;
+	cout << "Datei \"" << filename << "\" erfolgreicht importiert." << endl << endl;
 }
 
 //
@@ -294,7 +294,7 @@ void exportStudentData(int occSpace, const string filename)
 	}
 	csv.close();
 
-	cout << "Datei \"" << FILENAME_CSV_EXPORT_STUDENTS << "\" erfolgreicht exportiert." << endl << endl;
+	cout << "Datei \"" << filename << "\" erfolgreicht exportiert." << endl << endl;
 }
 
 //
