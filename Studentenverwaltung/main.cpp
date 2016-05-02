@@ -7,23 +7,23 @@
 using namespace std;
 
 //Constants
-const double VERSION = 0.3;
+const double VERSION = 0.4;
 const string APPNAME = "STUDENTENVERWALTUNG";
 const int STUDENT_COUNT_MAX = 10;
 const string FILENAME_CSV_IMPORT_STUDENTS = "import.csv";
 const string FILENAME_CSV_EXPORT_STUDENTS = "export.csv";
-const int SELECTION_MIN = 1;
-const int SELECTION_MAX = 7;
+const int SELECTION_MIN = 1, SELECTION_MAX = 7; 
 
 
 //Structures
 struct Student //student infos
 {
-	string firstName = "";
-	string lastName = "";
+	string firstName = "", lastName = "";
 	char sex = '0';
 	int matriculationNumber = -1;
 	float finalGrade = -1;
+
+	struct Student *next, *previous;
 };
 
 //Array
