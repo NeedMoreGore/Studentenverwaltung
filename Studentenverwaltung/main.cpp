@@ -10,8 +10,8 @@ using namespace std;
 const double VERSION = 0.4;
 const string APPNAME = "STUDENTENVERWALTUNG";
 const int STUDENT_COUNT_MAX = 10;
-const string FILENAME_CSV_IMPORT_STUDENTS = "D:\\Workspace\\VisualStudio\\Data\\Studentenverwaltung\\import.csv";
-const string FILENAME_CSV_EXPORT_STUDENTS = "D:\\Workspace\\VisualStudio\\Data\\Studentenverwaltung\\export.csv";
+const string FILENAME_CSV_IMPORT_STUDENTS = "import.csv";
+const string FILENAME_CSV_EXPORT_STUDENTS = "export.csv";
 const int SELECTION_MIN = 1, SELECTION_MAX = 7; 
 
 
