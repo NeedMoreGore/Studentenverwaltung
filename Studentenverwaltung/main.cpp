@@ -1,7 +1,7 @@
-#include <iostream>;
-#include <fstream>;
-#include <string>;
-#include <limits>;
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <limits>
 #include <conio.h>
 
 using namespace std;
@@ -10,8 +10,8 @@ using namespace std;
 const double VERSION = 0.4;
 const string APPNAME = "STUDENTENVERWALTUNG";
 const int STUDENT_COUNT_MAX = 10;
-const string FILENAME_CSV_IMPORT_STUDENTS = "import.csv";
-const string FILENAME_CSV_EXPORT_STUDENTS = "export.csv";
+const string FILENAME_CSV_IMPORT_STUDENTS = "D:\\Workspace\\VisualStudio\\Data\\Studentenverwaltung\\import.csv";
+const string FILENAME_CSV_EXPORT_STUDENTS = "D:\\Workspace\\VisualStudio\\Data\\Studentenverwaltung\\export.csv";
 const int SELECTION_MIN = 1, SELECTION_MAX = 7; 
 
 
@@ -21,7 +21,7 @@ struct Student //student infos
 	string firstName = "", lastName = "";
 	char sex = '0';
 	int matriculationNumber = -1;
-	float finalGrade = -1;
+	double finalGrade = -1;
 
 	struct Student *next, *previous;
 };
@@ -30,24 +30,19 @@ struct Student //student infos
 Student students[STUDENT_COUNT_MAX];
 
 //Prototypes
-void displayMainMenu(int &selection);
-void validateInput(const int selection);
-void listAllStudents(const int occSpace);
-void importStudentData(int &occSpace, const string filename = FILENAME_CSV_IMPORT_STUDENTS);
-void pauseSystem();
 void addStudent(int &occSpace);
-void exportStudentData(const int occSpace, const string filename = FILENAME_CSV_EXPORT_STUDENTS);
-void displayTitle();
-//bool hasFreeSpace();
+void displayMainMenu();
 void displayOccSpace(const int occSpace);
+void displayTitle();
+void exportStudentData(const int occSpace, const string filename = FILENAME_CSV_EXPORT_STUDENTS);
+int getSelection();
+void importStudentData(int &occSpace, const string filename = FILENAME_CSV_IMPORT_STUDENTS);
+void listAllStudents(const int occSpace);
+void pauseSystem();
 void saveStudentData(Student student, int &occSpace);
+int validateSelection(const int selection);
 
-
-
-
-
-
-
+//bool hasFreeSpace();
 
 
 
@@ -60,7 +55,12 @@ int main()
 
 	while (true)
 	{
-		displayMainMenu(selection); //
+		do
+		{
+			displayTitle();
+			displayMainMenu();
+			selection = validateSelection(getSelection());
+		} while (selection < SELECTION_MIN || selection > SELECTION_MAX);
 
 		switch (selection)
 		{
@@ -95,72 +95,13 @@ int main()
 	}
 }
 
-
-
-
-
-
-
-
-
 //Functions
-
-//
-//
-//displays menu in console
-//
-//
-
-void displayMainMenu(int &selection)
-{
-	do
-	{
-		displayTitle();
-
-		cout << "1) Student(in) auflisten" << endl;
-		cout << "2) Student(in) anlegen" << endl;
-		cout << "3) Student(in) suchen" << endl;
-		cout << "4) Student(in) bearbeiten" << endl;
-		cout << "5) Studierende importieren" << endl;
-		cout << "6) Studierende exportieren" << endl;
-		cout << "7) Programmende" << endl << endl;
-
-		cout << "Auswahl: ";
-
-		cin >> selection; //User input: menu selection
-
-		validateInput(selection);
-	} while (selection < SELECTION_MIN || selection > SELECTION_MAX); //display selection menu until 7 is pressed
-}
-
-//
-//
-//lists all entries in Student array
-//
-//
-
-void listAllStudents(const int occSpace)
-{
-	cout << " ------------------------ \n| Student(in) auflisten: |\n ------------------------ " << endl << endl;
-	for (int i = 0; i < occSpace; i++)
-	{
-		cout << "Student " << i + 1 << ":" << endl;
-		cout << "__________" << endl;
-		cout << "		Vorname:        " << students[i].firstName << endl;
-		cout << "		Nachname:       " << students[i].lastName << endl;
-		cout << "		Geschlecht:     " << students[i].sex << endl;
-		cout << "		Matrikelnummer: " << students[i].matriculationNumber << endl;
-		cout << "		Abschlussnote:  " << students[i].finalGrade << endl;
-		cout << "----------------------------------------------------" << endl << endl;
-	}
-}
 
 //
 //
 //Adds a new entry to array
 //
 //
-
 void addStudent(int &occSpace)
 {
 	Student newStudent;
@@ -211,12 +152,95 @@ void addStudent(int &occSpace)
 	} while (selection == 'j');
 
 }
+
+//
+//
+//displays menu in console
+//
+//
+void displayMainMenu()
+{
+		cout << "1) Student(in) auflisten" << endl;
+		cout << "2) Student(in) anlegen" << endl;
+		cout << "3) Student(in) suchen" << endl;
+		cout << "4) Student(in) bearbeiten" << endl;
+		cout << "5) Studierende importieren" << endl;
+		cout << "6) Studierende exportieren" << endl;
+		cout << "7) Programmende" << endl << endl;
+
+		cout << "Auswahl: ";
+}
+
+//
+//
+//displays the free space of an array
+//
+//
+void displayOccSpace(const int occSpace)
+{
+	cout << "Belegte Speicherplaetze: " << occSpace << " / " << STUDENT_COUNT_MAX << endl << endl;
+}
+
+//
+//
+//clears the console and displays the title
+//
+//
+void displayTitle()
+{
+	system("cls");
+	cout << "=========================================================\n ============ " << APPNAME << " ==== V" << VERSION << " ============ \n=========================================================" << endl << endl;
+}
+
+//
+//
+//exports array as csv
+//
+//
+void exportStudentData(int occSpace, const string filename)
+{
+	ofstream csv;
+
+	cout << " -------------------------- \n| Studierende exportieren: |\n -------------------------- " << endl << endl;
+
+	csv.open(filename, ios::out);
+
+	for (int i = 0; i < occSpace; i++)
+	{
+		csv << students[i].firstName << ";"
+			<< students[i].lastName << ";"
+			<< students[i].sex << ";"
+			<< students[i].matriculationNumber << ";"
+			<< students[i].finalGrade << ";";
+	}
+
+	if (csv.good())
+		cout << "Datei \"" << filename << "\" erfolgreicht exportiert." << endl << endl;
+	else
+		cout << "FEHLER: Datei \"" << filename << "\" konnte nicht exportiert werden." << endl << endl;
+
+	csv.close();
+}
+
+//
+//
+//return value of user input
+//
+//
+int getSelection()
+{
+	int selection = 0;
+
+	cin >> selection; //User input: menu selection
+
+	return selection;
+}
+
 //
 //
 //load csv data into Student array
 //
 //
-
 void importStudentData(int &occSpace, const string filename)
 {
 	ifstream csv;
@@ -281,53 +305,77 @@ void importStudentData(int &occSpace, const string filename)
 
 //
 //
-//exports array as csv
+//lists all entries in Student array
 //
 //
-
-void exportStudentData(int occSpace, const string filename)
+void listAllStudents(const int occSpace)
 {
-	ofstream csv;
-
-	cout << " -------------------------- \n| Studierende exportieren: |\n -------------------------- " << endl << endl;
-
-	csv.open(filename, ios::out);
+	cout << " ------------------------ \n| Student(in) auflisten: |\n ------------------------ " << endl << endl;
 
 	for (int i = 0; i < occSpace; i++)
 	{
-		csv << students[i].firstName << ";"
-			<< students[i].lastName << ";"
-			<< students[i].sex << ";"
-			<< students[i].matriculationNumber << ";"
-			<< students[i].finalGrade << ";";
+		cout << "Student " << i + 1 << ":" << endl;
+		cout << "__________" << endl;
+		cout << "		Vorname:        " << students[i].firstName << endl;
+		cout << "		Nachname:       " << students[i].lastName << endl;
+		cout << "		Geschlecht:     " << students[i].sex << endl;
+		cout << "		Matrikelnummer: " << students[i].matriculationNumber << endl;
+		cout << "		Abschlussnote:  " << students[i].finalGrade << endl;
+		cout << "----------------------------------------------------" << endl << endl;
 	}
-
-	if(csv.good())
-		cout << "Datei \"" << filename << "\" erfolgreicht exportiert." << endl << endl;
-	else
-		cout << "FEHLER: Datei \"" << filename << "\" konnte nicht exportiert werden." << endl << endl;
-
-	csv.close();
 }
 
 //
 //
-//clears the console and displays the title
+//Pauses the programm (only Windows)
 //
 //
-
-void displayTitle()
+void pauseSystem()
 {
-	system("cls");
-	cout << "=========================================================\n ============ " << APPNAME << " ==== V" << VERSION << " ============ \n=========================================================" << endl << endl;
+	cout << "Druecken Sie eine beliebige Taste um in das Hauptmenue zu gelangen..." << endl << endl;
+	_getch(); //pause until key is pressed
+}
+
+//
+//
+//writes input to first free space of array
+//
+//
+void saveStudentData(Student student, int &occSpace)
+{
+	students[occSpace].firstName = student.firstName;
+	students[occSpace].lastName = student.lastName;
+	students[occSpace].sex = student.sex;
+	students[occSpace].matriculationNumber = student.matriculationNumber;
+	students[occSpace].finalGrade = -1;
+
+	occSpace++;
+}
+
+//
+//
+//checks if input is valid
+//
+//
+int validateSelection(const int selection)
+{
+	if (!cin.good() || (selection < SELECTION_MIN || selection > SELECTION_MAX))
+	{
+		cin.clear(); //clear flag
+		cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer
+		cout << endl << "Bitte waehlen Sie einen gueltigen Menuepunkt aus." << endl << endl;
+		system("pause");
+		return 0;
+	}
+	else
+		return selection;
 }
 
 //
 //
 //checks array for free space and sets the value
-//NOT NEEDED ATM
 //
-
+//
 /*
 void calcOccSpace(int &occSpace)
 {
@@ -345,60 +393,3 @@ occSpace = STUDENT_COUNT_MAX;
 }
 
 */
-
-//
-//
-//displays the free space of an array
-//
-//
-
-void displayOccSpace(const int occSpace)
-{
-	cout << "Belegte Speicherplaetze: " << occSpace << " / " << STUDENT_COUNT_MAX << endl << endl;
-}
-
-//
-//
-//writes input to first free space of array
-//
-//
-
-void saveStudentData(Student student, int &occSpace)
-{
-	students[occSpace].firstName = student.firstName;
-	students[occSpace].lastName = student.lastName;
-	students[occSpace].sex = student.sex;
-	students[occSpace].matriculationNumber = student.matriculationNumber;
-	students[occSpace].finalGrade = -1;
-
-	occSpace++;
-}
-
-//
-//
-//checks if input is valid
-//
-//
-
-void validateInput(const int selection)
-{
-	if (!cin.good() || (selection < SELECTION_MIN || selection > SELECTION_MAX))
-	{
-		cin.clear(); //clear flag
-		cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer
-		cout << endl << "Bitte waehlen Sie einen gueltigen Menuepunkt aus." << endl << endl;
-		system("pause");
-	}
-}
-
-//
-//
-//Pauses the programm (only Windows)
-//
-//
-void pauseSystem()
-{
-	cout << "Druecken Sie eine beliebige Taste um in das Hauptmenue zu gelangen..." << endl << endl;
-	_getch(); //pause until key is pressed
-}
-
