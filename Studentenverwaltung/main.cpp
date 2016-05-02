@@ -23,35 +23,33 @@ struct Student //student infos
 	int matriculationNumber = -1;
 	double finalGrade = -1;
 
-	struct Student *next;
-	struct Student *previous;
+	struct Student *next, *previous;
 };
 
 //Pointer
-struct Student *first = NULL;
-struct Student *last = NULL;
+struct Student *first = NULL, *last = NULL;
 
 
 //Array
 Student students[STUDENT_COUNT_MAX];
 
 //Prototypes
+void addStdnt(const string fristName, const string lastName, const char sex, const int matriculationNumber, const double finalGrade);
 void addStdnt();
-void addStdnt_old(int &occSpace);
+//void addStdnt(int &occSpace);
+void clearStdntData();
 void dspMainMenu();
-void dspOccSpc(const int occSpace);
+//void dspOccSpc(const int occSpace);
 void dspTitle();
-void expStdntData(const int occSpace, const string filename = FILENAME_CSV_EXPORT_STUDENTS);
+void expStdntData(const string filename = FILENAME_CSV_EXPORT_STUDENTS);
 int getSelection();
 Student getStdntData();
-void initPntr(void);
-void impStdntData(int &occSpace, const string filename = FILENAME_CSV_IMPORT_STUDENTS);
-void listAllStdnts(const int occSpace);
-void pauseSystem();
-void saveStdntData(Student student, int &occSpace);
-int validateSelection(const int selection);
-
 //bool hasFreeSpace();
+void impStdntData(const string filename = FILENAME_CSV_IMPORT_STUDENTS);
+void listAllStdnts();
+void pauseSystem();
+//void saveStdntData(Student student);
+int validateSelection(const int selection);
 
 
 
@@ -75,7 +73,7 @@ int main()
 		{
 		case 1:
 			dspTitle();
-			listAllStdnts(occSpace);
+			listAllStdnts();
 			pauseSystem();
 			break;
 		case 2:
@@ -89,12 +87,12 @@ int main()
 			break;
 		case 5:
 			dspTitle();
-			impStdntData(occSpace);
+			impStdntData();
 			pauseSystem();
 			break;
 		case 6:
 			dspTitle();
-			expStdntData(occSpace);
+			expStdntData();
 			pauseSystem();
 			break;
 		case 7:
@@ -105,87 +103,165 @@ int main()
 }
 
 //Functions
+//
+//
+// Add Student to list
+//
+//
 void addStdnt()
 {
 	Student newStudent;
 
 	/* Zeiger zum Zugriff auf die einzelnen Elemente
 	* der Struktur */
-	struct Student *pntr1 = NULL;
-	struct Student *pntr2 = NULL;
+	struct Student *pntr1 = NULL, *pntr2 = NULL;
 
-	/* Wurde schon Speicher für den ende-Zeiger bereitgestellt? */
+	last = new Student; // allocate free space
 
-	last = new Student;
-
+	// if there's no free space available
 	if (last == NULL) {
-		printf("Konnte keinen Speicherplatz für ende "
-			"reservieren\n");
+		printf("FEHLER: Konnte keinen Speicherplatz reservieren.");
 		return;
 	}
 
-	/* Wir fragen ab, ob es schon ein Element in der Liste gibt.
-	* Wir suchen das Element, auf das unser Zeiger *anfang
-	* zeigt. Falls *anfang immer noch auf NULL zeigt, bekommt
-	* *anfang die Adresse unseres 1. Elements und ist somit der
-	* Kopf (Anfang) unserer Liste. */
+	//if there's no first element in list set first pointer to first element in list
 	if (first == NULL) {
-		/* Wir reservieren Speicherplatz für unsere
-		* Struktur für das erste Element der Liste. */
+
 
 		first = new Student;
 
+		// if there's no free space available
 		if (first == NULL) {
-			fprintf(stderr, "Kein Speicherplatz vorhanden "
-				"fuer anfang\n");
+			fprintf(stderr, "FEHLER: Kein Speicherplatz vorhanden.");
 			return;
 		}
 		
-		newStudent = getStdntData();
+		newStudent = getStdntData(); //get data per user input
 
+		//allocate input to element in list
 		first->firstName = newStudent.firstName;
 		first->lastName = newStudent.lastName;
 		first->sex = newStudent.sex;
 		first->matriculationNumber = newStudent.matriculationNumber;
 		first->finalGrade = newStudent.finalGrade;
 
-		first->next = NULL;
-		last = first;
-		last->previous = NULL;
+		first->next = NULL; //set next pointer to NULL
+		last = first; //set last element to first element
+		last->previous = NULL; //set last pointer to NULL
 	}
 	
 	else 
 	{
-		pntr1 = first;    /* Wir zeigen auf das 1. Element. */
-		while (pntr1->next != NULL)
-			pntr1 = pntr1->next;
-		/* Wir reservieren einen Speicherplatz für das letzte
-		* Element der Liste und hängen es an. */
-		
-		pntr1->next = new Student;
-		if (pntr1 == NULL) {
+		pntr1 = first; //point to first element
 
-			fprintf(stderr, "Kein Speicherplatz fuer "
-				"letztes Element\n");
+		//search while there's no space available
+		while (pntr1->next != NULL)
+			pntr1 = pntr1->next; //set pntr1 to next element
+		
+		pntr1->next = new Student; //allocate free space
+		
+		//catch error if there's no free space after all
+		if (pntr1 == NULL)
+		{
+			fprintf(stderr, "FEHLER: Kein Speicherplatz fuer letztes Element\n");
 			return;
 		}
 
+		newStudent = getStdntData(); //get user input
 
-		newStudent = getStdntData();
+		pntr2 = pntr1; //save active pointer
 
-		pntr2 = pntr1;
-
-		pntr1 = pntr1->next;/* zeiger auf neuen Speicherplatz */
+		pntr1 = pntr1->next; //point to free space
 		pntr1->firstName = newStudent.firstName;
 		pntr1->lastName = newStudent.lastName;
 		pntr1->sex = newStudent.sex;
 		pntr1->matriculationNumber = newStudent.matriculationNumber;
 		pntr1->finalGrade = newStudent.finalGrade;
 
-		pntr1->next = NULL;
-		last = pntr1;
-		pntr1->previous = pntr2;
-		pntr2->next = pntr1;
+		pntr1->next = NULL; //set next pointer to NULL
+		last = pntr1; //set active pointer to last element in list
+		pntr1->previous = pntr2; //set previous pointer to saved pointer
+		pntr2->next = pntr1; //set next pointer from saved pointer to active pointer
+	}
+}
+
+//
+//
+// Add Student to list
+//
+//
+void addStdnt(const string firstName, const string lastName, const char sex, const int matriculationNumber, const double finalGrade)
+{
+	Student newStudent;
+
+	/* Zeiger zum Zugriff auf die einzelnen Elemente
+	* der Struktur */
+	struct Student *pntr1 = NULL, *pntr2 = NULL;
+
+	last = new Student; // allocate free space
+
+						// if there's no free space available
+	if (last == NULL) 
+	{
+		printf("FEHLER: Konnte keinen Speicherplatz reservieren.");
+		return;
+	}
+
+	//if there's no first element in list set first pointer to first element in list
+	if (first == NULL)
+	{
+
+
+		first = new Student;
+
+		// if there's no free space available
+		if (first == NULL) 
+		{
+			fprintf(stderr, "FEHLER: Kein Speicherplatz vorhanden.");
+			return;
+		}
+									 //allocate input to element in list
+		first->firstName = firstName;
+		first->lastName = lastName;
+		first->sex = sex;
+		first->matriculationNumber = matriculationNumber;
+		first->finalGrade = finalGrade;
+
+		first->next = NULL; //set next pointer to NULL
+		last = first; //set last element to first element
+		last->previous = NULL; //set last pointer to NULL
+	}
+
+	else
+	{
+		pntr1 = first; //point to first element
+
+					   //search while there's no space available
+		while (pntr1->next != NULL)
+			pntr1 = pntr1->next; //set pntr1 to next element
+
+		pntr1->next = new Student; //allocate free space
+
+								   //catch error if there's no free space after all
+		if (pntr1 == NULL)
+		{
+			fprintf(stderr, "FEHLER: Kein Speicherplatz fuer letztes Element\n");
+			return;
+		}
+
+		pntr2 = pntr1; //save active pointer
+
+		pntr1 = pntr1->next; //point to free space
+		pntr1->firstName = firstName;
+		pntr1->lastName = lastName;
+		pntr1->sex = sex;
+		pntr1->matriculationNumber = matriculationNumber;
+		pntr1->finalGrade = finalGrade;
+
+		pntr1->next = NULL; //set next pointer to NULL
+		last = pntr1; //set active pointer to last element in list
+		pntr1->previous = pntr2; //set previous pointer to saved pointer
+		pntr2->next = pntr1; //set next pointer from saved pointer to active pointer
 	}
 }
 
@@ -194,7 +270,8 @@ void addStdnt()
 //Adds a new entry to array
 //
 //
-void addStdnt_old(int &occSpace)
+/*
+void addStdnt(int &occSpace)
 {
 	Student newStudent;
 	char selection;
@@ -242,7 +319,44 @@ void addStdnt_old(int &occSpace)
 			cout << endl;
 		} while (selection != 'j' && selection != 'n');
 	} while (selection == 'j');
+}
+*/
 
+//
+//
+// clears the list
+//
+//
+void clearStdntData() 
+{
+	struct Student *pntr1, *pntr2;
+	bool singleEntry = true;
+
+	/* Ist überhaupt eine Liste zum Löschen vorhanden? */
+	if (first != NULL) 
+	{
+		/* Es ist eine vorhanden ... */
+		pntr1 = first->next;
+		while (pntr1 != NULL) 
+		{
+			singleEntry = false;
+			pntr2 = first->next->next;
+			if (pntr2 == NULL)
+				break;
+			first->next = pntr2;
+			pntr2->previous = first;
+			free(pntr1);
+			pntr1 = pntr2;
+		}
+
+		/* Jetzt löschen wir erst den Anfang der Liste und
+		* dann das Ende der Liste. */
+		free(first);
+		if(!singleEntry)
+			free(last);
+		first = NULL;
+		last = NULL;
+	}
 }
 
 //
@@ -268,10 +382,12 @@ void dspMainMenu()
 //displays the free space of an array
 //
 //
+/*
 void dspOccSpc(const int occSpace)
 {
 	cout << "Belegte Speicherplaetze: " << occSpace << " / " << STUDENT_COUNT_MAX << endl << endl;
 }
+*/
 
 //
 //
@@ -289,29 +405,34 @@ void dspTitle()
 //exports array as csv
 //
 //
-void expStdntData(int occSpace, const string filename)
+void expStdntData(const string filename)
 {
 	ofstream csv;
+	struct Student *pntr;
 
 	cout << " -------------------------- \n| Studierende exportieren: |\n -------------------------- " << endl << endl;
 
 	csv.open(filename, ios::out);
+	pntr = first;
 
-	for (int i = 0; i < occSpace; i++)
+	if (pntr != NULL)
 	{
-		csv << students[i].firstName << ";"
-			<< students[i].lastName << ";"
-			<< students[i].sex << ";"
-			<< students[i].matriculationNumber << ";"
-			<< students[i].finalGrade << ";";
+		do
+		{
+			csv << pntr->firstName << ";"
+				<< pntr->lastName << ";"
+				<< pntr->sex << ";"
+				<< pntr->matriculationNumber << ";"
+				<< pntr->finalGrade << ";";
+			pntr = pntr->next;
+
+		} while (pntr != NULL);
 	}
 
 	if (csv.good())
 		cout << "Datei \"" << filename << "\" erfolgreicht exportiert." << endl << endl;
 	else
 		cout << "FEHLER: Datei \"" << filename << "\" konnte nicht exportiert werden." << endl << endl;
-
-	csv.close();
 }
 
 //
@@ -351,11 +472,34 @@ Student getStdntData()
 
 //
 //
+//checks array for free space and sets the value
+//
+//
+/*
+void calcOccSpace(int &occSpace)
+{
+for (int i = 0; i < STUDENT_COUNT_MAX; i++)
+{
+if (students[i].matriculationNumber == -1)
+{
+occSpace = i;
+}
+if (students[STUDENT_COUNT_MAX - 1].matriculationNumber != -1)
+{
+occSpace = STUDENT_COUNT_MAX;
+}
+}
+}
+*/
+
+//
+//
 //load csv data into Student array
 //
 //
-void impStdntData(int &occSpace, const string filename)
+void impStdntData(const string filename)
 {
+	Student importStudent;
 	ifstream csv;
 	string value;
 	char c;
@@ -367,46 +511,40 @@ void impStdntData(int &occSpace, const string filename)
 	if (csv.good())
 	{
 
-		//clear array
-		for (int i = 0; i < STUDENT_COUNT_MAX; i++)
-		{
-			students[i].firstName = "";
-			students[i].lastName = "";
-			students[i].sex = '0';
-			students[i].matriculationNumber = -1;
-			students[i].finalGrade = -1;
-		}
+		clearStdntData(); //clear list
 
 		//read from csv
-		for (int i = 0; i < STUDENT_COUNT_MAX; i++)
+		while(true)
 		{
+		
 			//get first name
 			getline(csv, value, ';');
-			students[i].firstName = value;
+			importStudent.firstName = value;
 
 			if (csv.eof() != 0) //break, if getline hits the end of file
 			{
 				csv.close();
-				occSpace = i;
 				break;
 			}
 
 			//get last name
 			getline(csv, value, ';');
-			students[i].lastName = value;
+			importStudent.lastName = value;
 
 			//get sex
 			csv.get(c);
-			students[i].sex = c;
+			importStudent.sex = c;
 			csv.ignore(1);
 
 			//get matriculation number
 			getline(csv, value, ';');
-			students[i].matriculationNumber = atoi(value.c_str());
+			importStudent.matriculationNumber = atoi(value.c_str());
 
 			//get final grade
 			getline(csv, value, ';');
-			students[i].finalGrade = atof(value.c_str());
+			importStudent.finalGrade = atof(value.c_str());
+
+			addStdnt(importStudent.firstName, importStudent.lastName, importStudent.sex, importStudent.matriculationNumber, importStudent.finalGrade);
 		}
 
 		csv.close();
@@ -418,20 +556,10 @@ void impStdntData(int &occSpace, const string filename)
 
 //
 //
-// Pointer initilisieren
-//
-//
-void initPntr(void) 
-{
-	first = last = NULL;
-}
-
-//
-//
 //lists all entries in Student array
 //
 //
-void listAllStdnts(const int occSpace)
+void listAllStdnts()
 {
 	struct Student *pntr;
 	int i = 1;
@@ -453,6 +581,7 @@ void listAllStdnts(const int occSpace)
 			cout << "		Abschlussnote:  " << pntr->finalGrade << endl;
 			cout << "----------------------------------------------------" << endl << endl;
 			pntr = pntr->next;
+			i++;
 		} while (pntr != NULL);
 	}
 }
@@ -473,6 +602,7 @@ void pauseSystem()
 //writes input to first free space of array
 //
 //
+/*
 void saveStdntData(Student student, int &occSpace)
 {
 	students[occSpace].firstName = student.firstName;
@@ -483,6 +613,7 @@ void saveStdntData(Student student, int &occSpace)
 
 	occSpace++;
 }
+*/
 
 //
 //
@@ -502,26 +633,3 @@ int validateSelection(const int selection)
 	else
 		return selection;
 }
-
-//
-//
-//checks array for free space and sets the value
-//
-//
-/*
-void calcOccSpace(int &occSpace)
-{
-for (int i = 0; i < STUDENT_COUNT_MAX; i++)
-{
-if (students[i].matriculationNumber == -1)
-{
-occSpace = i;
-}
-if (students[STUDENT_COUNT_MAX - 1].matriculationNumber != -1)
-{
-occSpace = STUDENT_COUNT_MAX;
-}
-}
-}
-
-*/
