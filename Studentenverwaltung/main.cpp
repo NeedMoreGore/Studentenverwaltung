@@ -7,7 +7,7 @@
 using namespace std;
 
 //Constants
-const double VERSION = 0.3;
+const double VERSION = 0.2;
 const string APPNAME = "STUDENTENVERWALTUNG";
 const int STUDENT_COUNT_MAX = 10;
 const string FILENAME_CSV_IMPORT_STUDENTS = "import.csv";
