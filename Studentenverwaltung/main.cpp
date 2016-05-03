@@ -1,7 +1,7 @@
-#include <iostream>;
-#include <fstream>;
-#include <string>;
-#include <limits>;
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <limits>
 #include <conio.h>
 
 using namespace std;
@@ -38,19 +38,8 @@ void pauseSystem();
 void addStudent(int &occSpace);
 void exportStudentData(const int occSpace, const string filename = FILENAME_CSV_EXPORT_STUDENTS);
 void displayTitle();
-//bool hasFreeSpace();
 void displayOccSpace(const int occSpace);
 void saveStudentData(Student student, int &occSpace);
-
-
-
-
-
-
-
-
-
-
 
 int main()
 {
@@ -94,13 +83,6 @@ int main()
 		}
 	}
 }
-
-
-
-
-
-
-
 
 
 //Functions
@@ -322,29 +304,6 @@ void displayTitle()
 	cout << "=========================================================\n ============ " << APPNAME << " ==== V" << VERSION << " ============ \n=========================================================" << endl << endl;
 }
 
-//
-//
-//checks array for free space and sets the value
-//NOT NEEDED ATM
-//
-
-/*
-void calcOccSpace(int &occSpace)
-{
-for (int i = 0; i < STUDENT_COUNT_MAX; i++)
-{
-if (students[i].matriculationNumber == -1)
-{
-occSpace = i;
-}
-if (students[STUDENT_COUNT_MAX - 1].matriculationNumber != -1)
-{
-occSpace = STUDENT_COUNT_MAX;
-}
-}
-}
-
-*/
 
 //
 //
