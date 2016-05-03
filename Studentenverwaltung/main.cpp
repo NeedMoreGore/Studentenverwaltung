@@ -175,13 +175,10 @@ void addStudent(int &occSpace)
 			if (selection == 'j')
 			{
 				saveStudentData(newStudent, occSpace);
-
 				cout << "Eintrag gespeichert" << endl;
 			}
 			else if (selection == 'n')
-			{
 				cout << "Eintrag verworfen" << endl;
-			}
 		} while (selection != 'j' && selection != 'n');
 
 		do
