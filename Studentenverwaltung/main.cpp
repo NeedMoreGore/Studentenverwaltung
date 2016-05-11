@@ -10,8 +10,7 @@ using namespace std;
 const double VERSION = 0.4;
 const string APPNAME = "STUDENTENVERWALTUNG";
 const int STUDENT_COUNT_MAX = 10;
-const string FILENAME_CSV_IMPORT_STUDENTS = "import.csv";
-const string FILENAME_CSV_EXPORT_STUDENTS = "export.csv";
+const string FILENAME_CSV_IMPORT_STUDENTS = "import.csv", FILENAME_CSV_EXPORT_STUDENTS = "export.csv";
 const int SELECTION_MIN = 1, SELECTION_MAX = 7; 
 
 
@@ -36,19 +35,15 @@ Student students[STUDENT_COUNT_MAX];
 //Prototypes
 void addStdnt(const string fristName, const string lastName, const char sex, const int matriculationNumber, const double finalGrade);
 void addStdnt();
-//void addStdnt(int &occSpace);
 void clearStdntData();
 void dspMainMenu();
-//void dspOccSpc(const int occSpace);
 void dspTitle();
 void expStdntData(const string filename = FILENAME_CSV_EXPORT_STUDENTS);
 int getSelection();
 Student getStdntData();
-//bool hasFreeSpace();
 void impStdntData(const string filename = FILENAME_CSV_IMPORT_STUDENTS);
 void listAllStdnts();
 void pauseSystem();
-//void saveStdntData(Student student);
 int validateSelection(const int selection);
 
 
@@ -120,13 +115,12 @@ void addStdnt()
 
 	// if there's no free space available
 	if (last == NULL) {
-		printf("FEHLER: Konnte keinen Speicherplatz reservieren.");
+		fprintf(stderr, "FEHLER: Kein Speicherplatz vorhanden.");
 		return;
 	}
 
 	//if there's no first element in list set first pointer to first element in list
 	if (first == NULL) {
-
 
 		first = new Student;
 
@@ -203,7 +197,7 @@ void addStdnt(const string firstName, const string lastName, const char sex, con
 						// if there's no free space available
 	if (last == NULL) 
 	{
-		printf("FEHLER: Konnte keinen Speicherplatz reservieren.");
+		fprintf(stderr, "FEHLER: Kein Speicherplatz vorhanden.");
 		return;
 	}
 
@@ -267,63 +261,6 @@ void addStdnt(const string firstName, const string lastName, const char sex, con
 
 //
 //
-//Adds a new entry to array
-//
-//
-/*
-void addStdnt(int &occSpace)
-{
-	Student newStudent;
-	char selection;
-
-	do
-	{
-		cout << " ---------------------- \n| Student(in) anlegen: |\n ---------------------- " << endl << endl;
-
-		dspOccSpc(occSpace);
-
-		if (occSpace == STUDENT_COUNT_MAX)
-			break;
-
-		cout << "Vorname:        ";
-		cin >> newStudent.firstName;
-		cout << "Nachname:       ";
-		cin >> newStudent.lastName;
-		cout << "Geschlecht:     ";
-		cin >> newStudent.sex;
-		cout << "Matrikelnummer: ";
-		cin >> newStudent.matriculationNumber;
-
-		do
-		{
-			cout << endl << "Eingabe speichern?(j/n): ";
-			cin >> selection;
-			cout << endl;
-
-			if (selection == 'j')
-			{
-				saveStdntData(newStudent, occSpace);
-
-				cout << "Eintrag gespeichert" << endl;
-			}
-			else if (selection == 'n')
-			{
-				cout << "Eintrag verworfen" << endl;
-			}
-		} while (selection != 'j' && selection != 'n');
-
-		do
-		{
-			cout << endl << "Wollen Sie einen weiteren Studenten hinzufuegen?(j/n): ";
-			cin >> selection;
-			cout << endl;
-		} while (selection != 'j' && selection != 'n');
-	} while (selection == 'j');
-}
-*/
-
-//
-//
 // clears the list
 //
 //
@@ -345,15 +282,15 @@ void clearStdntData()
 				break;
 			first->next = pntr2;
 			pntr2->previous = first;
-			free(pntr1);
+			delete pntr1;
 			pntr1 = pntr2;
 		}
 
 		/* Jetzt löschen wir erst den Anfang der Liste und
 		* dann das Ende der Liste. */
-		free(first);
+		delete first;
 		if(!singleEntry)
-			free(last);
+			delete last;
 		first = NULL;
 		last = NULL;
 	}
@@ -379,18 +316,6 @@ void dspMainMenu()
 
 //
 //
-//displays the free space of an array
-//
-//
-/*
-void dspOccSpc(const int occSpace)
-{
-	cout << "Belegte Speicherplaetze: " << occSpace << " / " << STUDENT_COUNT_MAX << endl << endl;
-}
-*/
-
-//
-//
 //clears the console and displays the title
 //
 //
@@ -409,10 +334,20 @@ void expStdntData(const string filename)
 {
 	ofstream csv;
 	struct Student *pntr;
+	string filename2 = "";
 
 	cout << " -------------------------- \n| Studierende exportieren: |\n -------------------------- " << endl << endl;
 
-	csv.open(filename, ios::out);
+	cout << "Geben Sie einen Dateinamen an: (Druecken Sie Enter fuer Standardname: export.csv)" << endl;
+	
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer otherwise it won't work properly ToDo: Replace "cin >> .." with "getline()"
+
+	getline(cin, filename2);
+
+	if (!filename2.empty())
+		csv.open(filename2, ios::out);
+	else
+		csv.open(filename, ios::out);
 	pntr = first;
 
 	if (pntr != NULL)
@@ -469,28 +404,6 @@ Student getStdntData()
 
 	return newStudent;
 }
-
-//
-//
-//checks array for free space and sets the value
-//
-//
-/*
-void calcOccSpace(int &occSpace)
-{
-for (int i = 0; i < STUDENT_COUNT_MAX; i++)
-{
-if (students[i].matriculationNumber == -1)
-{
-occSpace = i;
-}
-if (students[STUDENT_COUNT_MAX - 1].matriculationNumber != -1)
-{
-occSpace = STUDENT_COUNT_MAX;
-}
-}
-}
-*/
 
 //
 //
@@ -596,24 +509,6 @@ void pauseSystem()
 	cout << "Druecken Sie eine beliebige Taste um in das Hauptmenue zu gelangen..." << endl << endl;
 	_getch(); //pause until key is pressed
 }
-
-//
-//
-//writes input to first free space of array
-//
-//
-/*
-void saveStdntData(Student student, int &occSpace)
-{
-	students[occSpace].firstName = student.firstName;
-	students[occSpace].lastName = student.lastName;
-	students[occSpace].sex = student.sex;
-	students[occSpace].matriculationNumber = student.matriculationNumber;
-	students[occSpace].finalGrade = -1;
-
-	occSpace++;
-}
-*/
 
 //
 //
