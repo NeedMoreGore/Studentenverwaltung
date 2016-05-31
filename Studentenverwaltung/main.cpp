@@ -6,7 +6,7 @@
 
 using namespace std;
 
-//Constants
+//Constants	!
 const double VERSION = 0.4;
 const string APPNAME = "STUDENTENVERWALTUNG";
 const int STUDENT_COUNT_MAX = 10;
