@@ -9,7 +9,6 @@ using namespace std;
 //Constants
 const double VERSION = 0.4;
 const string APPNAME = "STUDENTENVERWALTUNG";
-const int STUDENT_COUNT_MAX = 10;
 const string FILENAME_CSV_IMPORT_STUDENTS = "import.csv", FILENAME_CSV_EXPORT_STUDENTS = "export.csv";
 const int SELECTION_MIN = 1, SELECTION_MAX = 7; 
 
@@ -22,15 +21,11 @@ struct Student //student infos
 	int matriculationNumber = -1;
 	double finalGrade = -1;
 
-	struct Student *next, *previous;
+	struct Student *next, *prev;
 };
 
 //Pointer
 struct Student *first = NULL, *last = NULL;
-
-
-//Array
-Student students[STUDENT_COUNT_MAX];
 
 //Prototypes
 void addStdnt(const string fristName, const string lastName, const char sex, const int matriculationNumber, const double finalGrade);
@@ -141,7 +136,7 @@ void addStdnt()
 
 		first->next = NULL; //set next pointer to NULL
 		last = first; //set last element to first element
-		last->previous = NULL; //set last pointer to NULL
+		last->prev = NULL; //set last pointer to NULL
 	}
 	
 	else 
@@ -174,7 +169,7 @@ void addStdnt()
 
 		pntr1->next = NULL; //set next pointer to NULL
 		last = pntr1; //set active pointer to last element in list
-		pntr1->previous = pntr2; //set previous pointer to saved pointer
+		pntr1->prev = pntr2; //set previous pointer to saved pointer
 		pntr2->next = pntr1; //set next pointer from saved pointer to active pointer
 	}
 }
@@ -188,8 +183,8 @@ void addStdnt(const string firstName, const string lastName, const char sex, con
 {
 	Student newStudent;
 
-	/* Zeiger zum Zugriff auf die einzelnen Elemente
-	* der Struktur */
+	//Zeiger zum Zugriff auf die einzelnen Elemente
+	//der Struktur
 	struct Student *pntr1 = NULL, *pntr2 = NULL;
 
 	last = new Student; // allocate free space
@@ -204,8 +199,6 @@ void addStdnt(const string firstName, const string lastName, const char sex, con
 	//if there's no first element in list set first pointer to first element in list
 	if (first == NULL)
 	{
-
-
 		first = new Student;
 
 		// if there's no free space available
@@ -223,7 +216,7 @@ void addStdnt(const string firstName, const string lastName, const char sex, con
 
 		first->next = NULL; //set next pointer to NULL
 		last = first; //set last element to first element
-		last->previous = NULL; //set last pointer to NULL
+		last->prev = NULL; //set last pointer to NULL
 	}
 
 	else
@@ -254,7 +247,7 @@ void addStdnt(const string firstName, const string lastName, const char sex, con
 
 		pntr1->next = NULL; //set next pointer to NULL
 		last = pntr1; //set active pointer to last element in list
-		pntr1->previous = pntr2; //set previous pointer to saved pointer
+		pntr1->prev = pntr2; //set previous pointer to saved pointer
 		pntr2->next = pntr1; //set next pointer from saved pointer to active pointer
 	}
 }
@@ -281,7 +274,7 @@ void clearStdntData()
 			if (pntr2 == NULL)
 				break;
 			first->next = pntr2;
-			pntr2->previous = first;
+			pntr2->prev = first;
 			delete pntr1;
 			pntr1 = pntr2;
 		}
@@ -330,7 +323,7 @@ void dspTitle()
 //exports array as csv
 //
 //
-void expStdntData(const string filename)
+void expStdntData(string filename)
 {
 	ofstream csv;
 	struct Student *pntr;
@@ -345,7 +338,11 @@ void expStdntData(const string filename)
 	getline(cin, filename2);
 
 	if (!filename2.empty())
-		csv.open(filename2, ios::out);
+	{
+		filename = filename2;
+		filename += ".csv";
+		csv.open(filename, ios::out);
+	}
 	else
 		csv.open(filename, ios::out);
 	pntr = first;
