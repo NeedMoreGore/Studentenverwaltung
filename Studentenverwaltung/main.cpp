@@ -35,10 +35,10 @@ string checkInput(string input);
 double checkInput(double input);
 char checkInput(char input);
 void deleteListElement(Student &deleteStdnt);
-void editListElement(Student &editStdnt);
-void editStdntData();
 void dspMainMenu();
 void dspTitle();
+void editListElement(Student &editStdnt);
+void editStdntData();
 void expStdntData(const string filename = FILENAME_CSV_EXPORT_STUDENTS);
 int getSelection();
 Student getStdntData();
@@ -353,7 +353,66 @@ void clearStdntData()
 
 //
 //
+// delete single list element
+//
+//
+
+void deleteListElement(Student &deleteStdnt)
+{
+	if (&deleteStdnt == first)
+	{
+		first = deleteStdnt.next;
+		first->previous = NULL;
+		delete &deleteStdnt;
+	}
+	else if (&deleteStdnt == last)
+	{
+		last = deleteStdnt.previous;
+		last->next = NULL;
+		delete &deleteStdnt;
+	}
+	else
+	{
+		deleteStdnt.next->previous = deleteStdnt.previous;
+		deleteStdnt.previous->next = deleteStdnt.next;
+		delete &deleteStdnt;
+	}
+}
+
+//
+//
+//displays menu in console
+//
+//
+void dspMainMenu()
+{
+		cout << "1) Student(in) auflisten" << endl;
+		cout << "2) Student(in) anlegen" << endl;
+		cout << "3) Student(in) suchen" << endl;
+		cout << "4) Student(in) bearbeiten" << endl;
+		cout << "5) Studierende importieren" << endl;
+		cout << "6) Studierende exportieren" << endl;
+		cout << "7) Programmende" << endl << endl;
+
+		cout << "Auswahl: ";
+}
+
+//
+//
+//clears the console and displays the title
+//
+//
+void dspTitle()
+{
+	system("cls");
+	cout << "=========================================================\n ============ " << APPNAME << " ==== V" << VERSION << " ============ \n=========================================================" << endl << endl;
+}
+
+//
+//
 // delete single entry from list
+//
+//
 void editStdntData()
 {
 	Student *searchFor = NULL;
@@ -442,64 +501,6 @@ void editListElement(Student &editStdnt)
 	cout << "----------------------------------------------------" << endl << endl;
 
 }
-
-//
-//
-// delete single list element
-//
-//
-
-void deleteListElement(Student &deleteStdnt)
-{
-	if (&deleteStdnt == first)
-	{
-		first = deleteStdnt.next;
-		first->previous = NULL;
-		delete &deleteStdnt;
-	}
-	else if (&deleteStdnt == last)
-	{
-		last = deleteStdnt.previous;
-		last->next = NULL;
-		delete &deleteStdnt;
-	}
-	else
-	{
-		deleteStdnt.next->previous = deleteStdnt.previous;
-		deleteStdnt.previous->next = deleteStdnt.next;
-		delete &deleteStdnt;
-	}
-}
-
-//
-//
-//displays menu in console
-//
-//
-void dspMainMenu()
-{
-		cout << "1) Student(in) auflisten" << endl;
-		cout << "2) Student(in) anlegen" << endl;
-		cout << "3) Student(in) suchen" << endl;
-		cout << "4) Student(in) bearbeiten" << endl;
-		cout << "5) Studierende importieren" << endl;
-		cout << "6) Studierende exportieren" << endl;
-		cout << "7) Programmende" << endl << endl;
-
-		cout << "Auswahl: ";
-}
-
-//
-//
-//clears the console and displays the title
-//
-//
-void dspTitle()
-{
-	system("cls");
-	cout << "=========================================================\n ============ " << APPNAME << " ==== V" << VERSION << " ============ \n=========================================================" << endl << endl;
-}
-
 //
 //
 //exports array as csv
