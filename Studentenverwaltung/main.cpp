@@ -25,7 +25,7 @@ struct Student //student infos
 };
 
 //Pointer
-struct Student *first = NULL, *last = NULL;
+Student *first = NULL, *last = NULL;
 
 //Prototypes
 void addStdnt(const string fristName, const string lastName, const char sex, const int matriculationNumber, const double finalGrade);
@@ -359,18 +359,27 @@ void clearStdntData()
 
 void deleteListElement(Student &deleteStdnt)
 {
-	if (&deleteStdnt == first)
+	if (&deleteStdnt == first && &deleteStdnt == last)
+	{
+		delete &deleteStdnt;
+		first = NULL;
+		last = NULL;
+	}
+
+	else if (&deleteStdnt == first)
 	{
 		first = deleteStdnt.next;
 		first->previous = NULL;
 		delete &deleteStdnt;
 	}
+
 	else if (&deleteStdnt == last)
 	{
 		last = deleteStdnt.previous;
 		last->next = NULL;
 		delete &deleteStdnt;
 	}
+
 	else
 	{
 		deleteStdnt.next->previous = deleteStdnt.previous;
@@ -650,7 +659,7 @@ void impStdntData(const string filename)
 //
 void listAllStdnts()
 {
-	struct Student *pntr;
+	Student *pntr;
 	int i = 1;
 
 	pntr = first;
