@@ -7,9 +7,8 @@
 using namespace std;
 
 //Constants
-const double VERSION = 0.4;
+const double VERSION = 1.0;
 const string APPNAME = "STUDENTENVERWALTUNG";
-const int STUDENT_COUNT_MAX = 10;
 const string FILENAME_CSV_IMPORT_STUDENTS = "import.csv", FILENAME_CSV_EXPORT_STUDENTS = "export.csv";
 const int SELECTION_MIN = 1, SELECTION_MAX = 7; 
 
@@ -28,14 +27,16 @@ struct Student //student infos
 //Pointer
 struct Student *first = NULL, *last = NULL;
 
-
-//Array
-Student students[STUDENT_COUNT_MAX];
-
 //Prototypes
 void addStdnt(const string fristName, const string lastName, const char sex, const int matriculationNumber, const double finalGrade);
 void addStdnt();
 void clearStdntData();
+string checkInput(string input);
+double checkInput(double input);
+char checkInput(char input);
+void deleteListElement(Student &deleteStdnt);
+void editListElement(Student &editStdnt);
+void editStdntData();
 void dspMainMenu();
 void dspTitle();
 void expStdntData(const string filename = FILENAME_CSV_EXPORT_STUDENTS);
@@ -43,6 +44,7 @@ int getSelection();
 Student getStdntData();
 void impStdntData(const string filename = FILENAME_CSV_IMPORT_STUDENTS);
 void listAllStdnts();
+void searchStdnt();
 void pauseSystem();
 int validateSelection(const int selection);
 
@@ -77,8 +79,14 @@ int main()
 			pauseSystem();
 			break;
 		case 3:
+			dspTitle();
+			searchStdnt();
+			pauseSystem();
 			break;
 		case 4:
+			dspTitle();
+			editStdntData(); //ToDo: handle pressing enter for getline when editing data
+			pauseSystem();
 			break;
 		case 5:
 			dspTitle();
@@ -261,6 +269,53 @@ void addStdnt(const string firstName, const string lastName, const char sex, con
 
 //
 //
+// checks if input was empty or not
+//
+//
+string checkInput(string input)
+{
+	string newInput = "";
+
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer otherwise it won't work properly ToDo: Replace "cin >> .." with "getline()"
+
+	getline(cin, newInput);
+
+	if (!newInput.empty())
+		return newInput;
+	else
+		return input;
+}
+
+char checkInput(char input)
+{
+	string newInput = "";
+
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer otherwise it won't work properly ToDo: Replace "cin >> .." with "getline()"
+
+	getline(cin, newInput);
+
+	if (!newInput.empty())
+		return input = newInput.at(0);
+	else
+		return input;
+}
+
+double checkInput(double input)
+{
+	string newInput = "";
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer otherwise it won't work properly ToDo: Replace "cin >> .." with "getline()"
+
+	getline(cin, newInput);
+
+	if (!newInput.empty())
+		return input = stod(newInput);
+	else
+		return input;
+}
+		
+
+//
+//
 // clears the list
 //
 //
@@ -293,6 +348,126 @@ void clearStdntData()
 			delete last;
 		first = NULL;
 		last = NULL;
+	}
+}
+
+//
+//
+// delete single entry from list
+void editStdntData()
+{
+	Student *searchFor = NULL;
+	int matriculationNumber = 0;
+	int selection;
+
+	cout << " -------------------------- \n| Studierende bearbeiten: |\n -------------------------- " << endl << endl;
+
+	cout << "Geben Sie bitte die Matrikelnummer ein: " << endl;
+
+	cin >> matriculationNumber;
+
+	//start search at the first element
+	searchFor = first;
+
+	while (searchFor->matriculationNumber != matriculationNumber)
+	{
+		if (searchFor == last)
+			break;
+		searchFor = searchFor->next;
+	}
+
+	if (searchFor->matriculationNumber == matriculationNumber)
+	{
+		cout << "\nSuchergebnis: " << endl;
+		cout << "__________" << endl;
+		cout << "		Vorname:        " << searchFor->firstName << endl;
+		cout << "		Nachname:       " << searchFor->lastName << endl;
+		cout << "		Geschlecht:     " << searchFor->sex << endl;
+		cout << "		Matrikelnummer: " << searchFor->matriculationNumber << endl;
+		cout << "		Abschlussnote:  " << searchFor->finalGrade << endl;
+		cout << "----------------------------------------------------" << endl << endl;
+
+		cout << "\n 1. Student bearbeiten" << endl;
+		cout << "2. Student löschen" << endl;
+		cout << "3. Verlassen" << endl << endl;
+		cout << "Auswahl: ";
+		cin >> selection;
+
+		do
+		{
+			switch (selection)
+			{
+			case 1:
+				editListElement(*searchFor);
+				break;
+			case 2:
+				deleteListElement(*searchFor);
+				break;
+			case 3:
+				break;
+			default:
+				cout << "\nBitte geben Sie einen gültigen Menüpunkt an." << endl;
+			}
+		} while (selection < 1 || selection > 3);
+	}
+	else
+		cout << "\nKein Student mit der angegebenen Matrikelnummer gefunden!" << endl << endl;
+}
+
+//
+//
+// edit single list element
+//
+//
+void editListElement(Student &editStdnt)
+{
+	cout << "\nBearbeiten: " << endl;
+	cout << "__________" << endl;
+	cout << "		Vorname:        ";
+	editStdnt.firstName = checkInput(editStdnt.firstName);
+	cout << "		Nachname:       ";
+	editStdnt.lastName = checkInput(editStdnt.lastName);
+	cout << "		Geschlecht:     ";
+	editStdnt.sex = checkInput(editStdnt.sex);
+	cout << "		Abschlussnote:  ";
+	editStdnt.finalGrade = checkInput(editStdnt.finalGrade);
+
+	cout << "\nNeuer Datensatz: " << endl;
+	cout << "__________" << endl;
+	cout << "		Vorname:        " << editStdnt.firstName << endl;
+	cout << "		Nachname:       " << editStdnt.lastName << endl;
+	cout << "		Geschlecht:     " << editStdnt.sex << endl;
+	cout << "		Matrikelnummer: " << editStdnt.matriculationNumber << endl;
+	cout << "		Abschlussnote:  " << editStdnt.finalGrade << endl;
+	cout << "----------------------------------------------------" << endl << endl;
+
+}
+
+//
+//
+// delete single list element
+//
+//
+
+void deleteListElement(Student &deleteStdnt)
+{
+	if (&deleteStdnt == first)
+	{
+		first = deleteStdnt.next;
+		first->previous = NULL;
+		delete &deleteStdnt;
+	}
+	else if (&deleteStdnt == last)
+	{
+		last = deleteStdnt.previous;
+		last->next = NULL;
+		delete &deleteStdnt;
+	}
+	else
+	{
+		deleteStdnt.next->previous = deleteStdnt.previous;
+		deleteStdnt.previous->next = deleteStdnt.next;
+		delete &deleteStdnt;
 	}
 }
 
@@ -347,7 +522,7 @@ void expStdntData(const string filename)
 	if (!filename2.empty())
 		csv.open(filename2, ios::out);
 	else
-		csv.open(filename, ios::out);
+		csv.open(filename, ios::out); 
 	pntr = first;
 
 	if (pntr != NULL)
@@ -497,6 +672,42 @@ void listAllStdnts()
 			i++;
 		} while (pntr != NULL);
 	}
+}
+
+void searchStdnt()
+{
+	Student *searchFor = NULL;
+	int matriculationNumber = 0;
+
+	cout << " -------------------------- \n| Studierende suchen: |\n -------------------------- " << endl << endl;
+
+	cout << "Geben Sie bitte die Matrikelnummer ein: " << endl; 
+
+	cin >> matriculationNumber;
+
+	//start search at the first element
+	searchFor = first;
+
+	while (searchFor->matriculationNumber != matriculationNumber)
+	{
+		if (searchFor == last)
+			break;
+		searchFor = searchFor->next;
+	}
+	
+	if (searchFor->matriculationNumber == matriculationNumber)
+	{
+		cout << "\nSuchergebnis: " << endl;
+		cout << "__________" << endl;
+		cout << "		Vorname:        " << searchFor->firstName << endl;
+		cout << "		Nachname:       " << searchFor->lastName << endl;
+		cout << "		Geschlecht:     " << searchFor->sex << endl;
+		cout << "		Matrikelnummer: " << searchFor->matriculationNumber << endl;
+		cout << "		Abschlussnote:  " << searchFor->finalGrade << endl;
+		cout << "----------------------------------------------------" << endl << endl;
+	}
+	else
+		cout << "\nKein Student mit der angegebenen Matrikelnummer gefunden!" << endl << endl;
 }
 
 //
