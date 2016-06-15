@@ -48,9 +48,6 @@ void searchStdnt();
 void pauseSystem();
 int validateSelection(const int selection);
 
-
-
-
 int main()
 {
 	//Variables
@@ -85,7 +82,7 @@ int main()
 			break;
 		case 4:
 			dspTitle();
-			editStdntData(); //ToDo: handle pressing enter for getline when editing data
+			editStdntData(); 
 			pauseSystem();
 			break;
 		case 5:
@@ -276,8 +273,6 @@ string checkInput(string input)
 {
 	string newInput = "";
 
-	cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer otherwise it won't work properly ToDo: Replace "cin >> .." with "getline()"
-
 	getline(cin, newInput);
 
 	if (!newInput.empty())
@@ -290,8 +285,6 @@ char checkInput(char input)
 {
 	string newInput = "";
 
-	cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer otherwise it won't work properly ToDo: Replace "cin >> .." with "getline()"
-
 	getline(cin, newInput);
 
 	if (!newInput.empty())
@@ -303,7 +296,6 @@ char checkInput(char input)
 double checkInput(double input)
 {
 	string newInput = "";
-	cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer otherwise it won't work properly ToDo: Replace "cin >> .." with "getline()"
 
 	getline(cin, newInput);
 
@@ -455,8 +447,8 @@ void editStdntData()
 		cout << "		Abschlussnote:  " << searchFor->finalGrade << endl;
 		cout << "----------------------------------------------------" << endl << endl;
 
-		cout << "\n 1. Student bearbeiten" << endl;
-		cout << "2. Student löschen" << endl;
+		cout << "\n1. Student bearbeiten" << endl;
+		cout << "2. Student loeschen" << endl;
 		cout << "3. Verlassen" << endl << endl;
 		cout << "Auswahl: ";
 		cin >> selection;
@@ -466,6 +458,7 @@ void editStdntData()
 			switch (selection)
 			{
 			case 1:
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer otherwise it won't work properly
 				editListElement(*searchFor);
 				break;
 			case 2:
@@ -515,7 +508,7 @@ void editListElement(Student &editStdnt)
 //exports array as csv
 //
 //
-void expStdntData(const string filename)
+void expStdntData(string filename)
 {
 	ofstream csv;
 	struct Student *pntr;
@@ -530,8 +523,8 @@ void expStdntData(const string filename)
 	getline(cin, filename2);
 
 	if (!filename2.empty())
-		csv.open(filename2, ios::out);
-	else
+		filename = filename2;
+
 		csv.open(filename, ios::out); 
 	pntr = first;
 
@@ -595,14 +588,23 @@ Student getStdntData()
 //load csv data into Student array
 //
 //
-void impStdntData(const string filename)
+void impStdntData(string filename)
 {
 	Student importStudent;
 	ifstream csv;
-	string value;
+	string value, filename2;
 	char c;
 
-	csv.open(filename);
+	cout << "Bitte geben Sie einen Dateinamen ein. (Enter drücken für Standardname: import.csv)";
+	
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer
+
+	getline(cin, filename2);
+
+	if (!filename.empty())
+		filename = filename2;
+
+	csv.open(filename, ios::in);
 
 	cout << " -------------------------- \n| Studierende importieren: |\n -------------------------- " << endl << endl;
 
