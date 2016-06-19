@@ -12,6 +12,9 @@ public:
 
 	void edit();
 	void print();
+	std::string checkInput(std::string s);
+	double checkInput(double d);
+	char checkInput(char c);
 
 	//setter getter
 	void setFirstName(std::string s);

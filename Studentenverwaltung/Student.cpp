@@ -26,6 +26,61 @@ void Student::print()
 	cout << "		Abschlussnote:  " << getFinalGrade() << endl;
 }
 
+void Student::edit()
+{
+	cout << "\nBearbeiten: " << endl;
+	cout << "__________" << endl;
+	cout << "		Vorname:        ";
+	setFirstName(checkInput(getFirstName()));
+	cout << "		Nachname:       ";
+	setLastName(checkInput(getLastName()));
+	cout << "		Geschlecht:     ";
+	setSex(checkInput(getSex()));
+	cout << "		Abschlussnote:  ";
+	setFinalGrade(checkInput(getFinalGrade()));
+}
+
+//
+//
+// checks if input was empty or not
+//
+//
+string Student::checkInput(string input)
+{
+	string newInput = "";
+
+	getline(cin, newInput);
+
+	if (!newInput.empty())
+		return newInput;
+	else
+		return input;
+}
+
+char Student::checkInput(char input)
+{
+	string newInput = "";
+
+	getline(cin, newInput);
+
+	if (!newInput.empty())
+		return input = newInput.at(0);
+	else
+		return input;
+}
+
+double Student::checkInput(double input)
+{
+	string newInput = "";
+
+	getline(cin, newInput);
+
+	if (!newInput.empty())
+		return input = stod(newInput);
+	else
+		return input;
+}
+
 void Student::setFirstName(std::string s)
 {
 	this->firstName = s;

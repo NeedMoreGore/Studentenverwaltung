@@ -22,6 +22,7 @@ public:
 	void sort(Student* head, Student* next, int iteration);
 	Student* binary_search(Student* start, Student* end, int searchIndex, int matriculationNumber);
 	Student* linear_search(Student* start, int matriculationNumber);
+
 	//setter getter
 	void setHead(Student* student);
 	Student* getHead();
