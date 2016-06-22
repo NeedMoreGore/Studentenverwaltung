@@ -2,7 +2,6 @@
 
 using namespace std;
 
-
 Student::Student()
 {
 	this->firstName = "";
@@ -12,11 +11,10 @@ Student::Student()
 	this->finalGrade = -1;
 }
 
-
 Student::~Student()
 {
 }
-
+//display student data
 void Student::print()
 {
 	cout << "		Vorname:        " << getFirstName() << endl;
@@ -25,7 +23,7 @@ void Student::print()
 	cout << "		Matrikelnummer: " << getMatriculationNumber() << endl;
 	cout << "		Abschlussnote:  " << getFinalGrade() << endl;
 }
-
+//edit student data
 void Student::edit()
 {
 	cout << "\nBearbeiten: " << endl;
@@ -39,68 +37,54 @@ void Student::edit()
 	cout << "		Abschlussnote:  ";
 	setFinalGrade(checkInput(getFinalGrade()));
 }
-
-//
-//
 // checks if input was empty or not
-//
-//
 string Student::checkInput(string input)
 {
 	string newInput = "";
 
 	getline(cin, newInput);
-
 	if (!newInput.empty())
 		return newInput;
 	else
 		return input;
 }
-
 char Student::checkInput(char input)
 {
 	string newInput = "";
 
 	getline(cin, newInput);
-
 	if (!newInput.empty())
 		return input = newInput.at(0);
 	else
 		return input;
 }
-
 double Student::checkInput(double input)
 {
 	string newInput = "";
 
 	getline(cin, newInput);
-
 	if (!newInput.empty())
 		return input = stod(newInput);
 	else
 		return input;
 }
-
+//setter and getter
 void Student::setFirstName(std::string s)
 {
 	this->firstName = s;
 }
-
-std::string Student::getFirstName()
+string Student::getFirstName()
 {
 	return this->firstName;
 }
-
 void Student::setLastName(std::string s)
 {
 	this->lastName = s;
 }
-
-std::string Student::getLastName()
+string Student::getLastName()
 {
 	return this->lastName;
 }
-
 void Student::setSex(char c)
 {
 	this->sex = c;

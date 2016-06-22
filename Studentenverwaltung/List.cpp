@@ -3,75 +3,59 @@
 using namespace std;
 
 const string List::FILENAME_CSV = "data.csv";
-bool bs_repeat = "false";
-int listSize = 0;
 
 List::List()
 {
-	
+	this->bs_repeat = "false";
+	this->list_size = 0;
+	this->tmp_prev = new Student();
+	this->tmp_next = new Student();
 }
 
 
 List::~List()
 {
+
 }
 
-
-
-//
-//
 // Add Student to list
-//
-//
 void List::insert(Student* student)
 {
 	// save Student pntr temporarily
 	Student *pntr1 = NULL, *pntr2 = NULL;
-
 	setTail(new Student()); // allocate free space
-
 	// if there's no free space available
 	if (getTail() == NULL) {
-		fprintf(stderr, "FEHLER: Kein Speicherplatz vorhanden : list.tail.");
+		fprintf(stderr, "FEHLER: Kein Speicherplatz vorhanden");
 		return;
 	}
-
 	//if there's no first element in list set first pointer to first element in list
 	if (getHead() == NULL) {
-
 		setHead(new Student());
-
 		// if there's no free space available
 		if (getHead() == NULL) {
 			fprintf(stderr, "FEHLER: Kein Speicherplatz vorhanden : list.head.");
 			return;
 		}
-
 		*head = *student;
-
 		getHead()->setNext(NULL); //set next pointer to NULL
 		setTail(getHead()); //set last element to first element
 		getTail()->setPrev(NULL); //set last pointer to NULL
 		setListSize(getListSize() + 1);
 	}
-
 	else
 	{
 		pntr1 = getHead(); //point to first element
-
 		//search while there's no space available
 		while (pntr1->getNext() != NULL)
 			pntr1 = pntr1->getNext(); //set pntr1 to next element
-
 		pntr1->setNext(getTail()); //allocate free space
-
 		 //catch error if there's no free space after all
 		if (pntr1 == NULL)
 		{
 			fprintf(stderr, "FEHLER: Kein Speicherplatz fuer letztes Element\n");
 			return;
 		}
-
 		pntr2 = pntr1; //save active pointer
 		pntr1 = pntr1->getNext();
 		*pntr1 = *student;
@@ -80,101 +64,75 @@ void List::insert(Student* student)
 		pntr1->setPrev(pntr2); //set previous pointer to saved pointer
 		pntr2->setNext(pntr1);//set next pointer from saved pointer to active pointer
 		setListSize(getListSize() + 1);
-
-		while (bs_repeat == true)
-		{
-			sort(getHead(), getHead()->getNext(), 0);
-			bs_repeat = false;
-		}
 	}
 }
-
-//
-//
-//sort list
-//
-//
-void List::sort(Student* head, Student* next, int iteration) //bubble sort // todo: repeat
+//sort list  - bubble sort (recursive)
+void List::sort(Student* left, Student* right) 
 {
-	Student* pntr = new Student();
-	if (next != NULL)
+	if (right != NULL)
 	{
-		if (head->getMatriculationNumber() > next->getMatriculationNumber())
+		if (left->getMatriculationNumber() > right->getMatriculationNumber()) //if left is bigger than right
 		{
-			bs_repeat = true;
-			*pntr = *head;
-			if (next != getTail())
-				head->setNext(next->getNext());
-			if(next == getTail())
-				head->setNext(NULL);
+			bs_repeat = true; //repeat until list is completly sorted
+			tmp_prev = left->getPrev(); //safe element previous to left
+			tmp_next = left->getNext(); //safe element next to left
 
-			head->setPrev(next);
-			if(next->getNext() != NULL)
-				next->getNext()->setPrev(head);
-		
-			if (getHead() == head)
+			if (right != getTail()) //if right element is not tail element
 			{
-				setHead(next);
-				next->setPrev(NULL);
-				next->setNext(head);
+				left->setNext(right->getNext());
+				right->getNext()->setPrev(left);
 			}
-			else if (getHead() != head && getTail() != next)
+
+			left->setPrev(right); 
+
+			if (getHead() != left && getTail() != right) //if left and right not tail or head element
 			{
-				next->setPrev(pntr->getPrev());
-				pntr->getPrev()->setNext(next);
-				next->setNext(head);
-				head->setPrev(next);
+				right->setPrev(tmp_prev);
+				right->setNext(left);
+				right->getPrev()->setNext(right);
 			}
-			else if (next == getTail())
+			else if (getHead() == left) //if left is head element
 			{
-				head->setNext(NULL);
-				head->setPrev(next);
-				setTail(head);
-				next->setNext(head);
-				next->setPrev(pntr->getPrev());
-				head->getPrev()->getPrev()->setNext(next);
-				bs_repeat = true;
+				setHead(right);
+				right->setPrev(NULL);
+				right->setNext(left);
+				left->setPrev(right);
 			}
-		}
-		else if (head->getMatriculationNumber() <= next->getMatriculationNumber())
-		{
-			*pntr = *getHead();
-			if (pntr->getNext() != NULL)
+			else if (right == getTail()) //if right is tail element
 			{
-				for (int i = 0; i <= iteration; i++)
-				{
-					pntr = pntr->getNext();
-				}
-				sort(pntr, pntr->getNext(), iteration + 1);
+				left->setNext(NULL);
+				left->setPrev(right);
+				setTail(left);
+				right->setNext(left);
+				right->setPrev(tmp_prev);
+				right->getPrev()->setNext(right);
 			}
 		}
 
-		else
+		if (left->getMatriculationNumber() > right->getMatriculationNumber()) //if swapped
+			tmp_next = left;
+		else //if not swapped
+			tmp_next = right;
+
+		if (tmp_next->getNext() != NULL) //if it's not end of list
 		{
-			*pntr = *getHead();
-			if (pntr->getNext() != NULL)
-			{
-				for (int i = 0; i <= iteration; i++)
-				{
-					pntr = pntr->getNext();
-				}
-				sort(pntr, pntr->getNext(), iteration + 1);
-			}
-
-			if (pntr != NULL)
-				//delete pntr;
-
-			cout << "Sortiert!";
+			sort(tmp_next, tmp_next->getNext());
 		}
-
+		else if (bs_repeat) //if end of list and elements were swapped
+		{
+			bs_repeat = false;
+			sort(getHead(), getHead()->getNext()); //start new sort
+		}
+		else //exit if list is sorted
+			return;
 	}
+
+	return;
 }
 
-//
-//
+
+
 //load csv data into Student array
-//
-//
 void List::importToCSV()
 {
 	Student* importStudent = new Student();
@@ -183,12 +141,10 @@ void List::importToCSV()
 	char c = 0;
 
 	csv.open(FILENAME_CSV, ios::in);
-
 	if (csv.good())
 	{
 		while (true)
 		{
-
 			//get first name
 			getline(csv, value, ';');
 			importStudent->setFirstName(value);
@@ -219,26 +175,17 @@ void List::importToCSV()
 			insert(importStudent);
 		}
 
-		csv.close();
+		sort(getHead(), getHead()->getNext()); //sort list after importing
 
-		if(getHead() != getTail())
-			sort(getHead(), getHead()->getNext(), 0);
-		
-		/*
-		while (bs_repeat == true)
-		{
-			bs_repeat = false;
-			sort(getHead(), getHead()->getNext(), 0);
-		}
-		*/
+		csv.close();
 	}
 	else
 		cout << "FEHLER: Datei \"" << FILENAME_CSV << "\" konnte nicht importiert werden." << endl << endl;
 }
-
+//display entire list
 void List::print()
 {
-	unsigned short int i = 1;
+	int i = 1;
 	Student* pntr = getHead();
 
 		if (getHead()!= NULL)
@@ -254,8 +201,7 @@ void List::print()
 			} while (pntr != NULL);
 		}
 	}
-
-
+//write student data to csv
 void List::exportToCSV()
 {
 	ofstream csv;
@@ -279,25 +225,29 @@ void List::exportToCSV()
 		} while (student != NULL);
 	}
 }
-
+//delete student from list
 void List::remove(Student* student)
 {
+	//if student is not head or tail
 	if (student != getHead() && student != getTail())
 	{
 		student->getNext()->setPrev(student->getPrev());
 		student->getPrev()->setNext(student->getNext());
 		delete student;
 	}
+	//if student is head but not tail
 	else if (student == getHead() && student != getTail())
 	{
 		student->getNext()->setPrev(NULL);
 		delete student;
 	}
+	//if student is tail but not head
 	else if (student == getTail() && student != getHead())
 	{
 		student->getPrev()->setNext(NULL);
 		delete student;
 	}
+	//if there's only one student in the list
 	else if (student == getTail() && student == getHead())
 	{
 		setHead(NULL);
@@ -305,62 +255,24 @@ void List::remove(Student* student)
 		delete student;
 	}
 }
-
+//search for student in list
 Student* List::search(int matriculationNumber)
 {
-	Student* start = getHead();
-	Student* end = getTail();
+	return search_linear(getHead(), matriculationNumber);
 
-	if (getHead()->getMatriculationNumber() == matriculationNumber && getTail()->getMatriculationNumber() == matriculationNumber)
-		return start;
-
-	//start = binary_search(start, end, (getListSize() / 2), matriculationNumber);
-	start = linear_search(start, matriculationNumber);
-
-	return start;
 }
 
-Student* List::binary_search(Student* tmp_start, Student* tmp_end, int searchIndex, int matriculationNumber)
-{
-		if (tmp_start->getMatriculationNumber() < matriculationNumber)
-		{
-			tmp_end = getTail();
-			tmp_start = getHead();
-
-			for (int i = 0; i < searchIndex; i++)
-			{
-				tmp_start = tmp_start->getNext();
-			}
-			binary_search(tmp_start, tmp_end, searchIndex + ((getListSize() - searchIndex) / 2), matriculationNumber);
-		}
-		if (tmp_start->getMatriculationNumber() > matriculationNumber)
-		{
-			tmp_start = getHead();
-			tmp_end = getHead();
-			for (int i = 0; i < searchIndex; i++)
-			{
-				tmp_end = tmp_end->getNext();
-			}
-
-			binary_search(tmp_start, tmp_end, searchIndex - ((getListSize() + searchIndex )/ 2), matriculationNumber);
-		}
-
-		if (tmp_start->getMatriculationNumber() == matriculationNumber)
-		{
-			return tmp_start;
-		}
-}
-
-Student* List::linear_search(Student* start, int matriculationNumber)
+//linear search for student in list (recursive)
+Student* List::search_linear(Student* start, int matriculationNumber)
 {
 	if (start->getMatriculationNumber() == matriculationNumber)
 		return start;
 	else if (start->getNext() != NULL)
-		linear_search(start->getNext(), matriculationNumber);
+		search_linear(start->getNext(), matriculationNumber);
 	else
 		return NULL;
 }
-
+//getter and setter
 void List::setHead(Student* student)
 {
 	this->head = student;
@@ -369,7 +281,6 @@ Student* List::getHead()
 {
 	return this->head;
 }
-
 void List::setTail(Student* student)
 {
 	this->tail = student;
@@ -378,13 +289,11 @@ Student* List::getTail()
 {
 	return this->tail;
 }
-
 int List::getListSize()
 {
-	return this->listSize;
+	return this->list_size;
 }
-
 void List::setListSize(int i)
 {
-	this->listSize = i;
+	this->list_size = i;
 }

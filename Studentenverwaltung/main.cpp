@@ -9,15 +9,12 @@
 using namespace std;
 
 //Constants
-const double VERSION = 1.0;
+const double VERSION = 2.0;
 const string APPNAME = "STUDENTENVERWALTUNG";
 
 const int SELECTION_MIN = 1, SELECTION_MAX = 5; 
 
 void addStdnt();
-string checkInput(string input);
-double checkInput(double input);
-char checkInput(char input);
 void dspMainMenu();
 void dspTitle();
 Student* getStdntData();
@@ -31,22 +28,15 @@ List* sList;
 
 int main()
 {
-	sList = new List();
-	sList->importToCSV();
-
-	//Variables
-	int selection = 0; //menu selection
+	sList = new List(); 
+	sList->importToCSV(); //read from data.csv and data to list
 
 	while (true)
 	{
-		do
-		{
-			dspTitle();
-			dspMainMenu();
-			selection = getSelection();
-		} while (selection == 0);
+		dspTitle();
+		dspMainMenu();
 
-		switch (selection)
+		switch (getSelection()) //switch to selected menu item if input is valid
 		{
 		case 1:
 			dspTitle();
@@ -71,43 +61,29 @@ int main()
 			pauseSystem();
 			break;
 		case 5:
-			sList->exportToCSV();
+			sList->exportToCSV(); //save data from list to data.csv
+			delete sList;
 			return 0;
-
 		}
 	}
 }
 
 //Functions
 
-//
-//
-// Add Student to list
-//
-//
+// Add single tudent to list
 void addStdnt()
 {
 	sList->insert(getStdntData());
+	sList->sort(sList->getHead(), sList->getHead()->getNext()); //sort list
 }
-
-//
-//
 //lists all entries in Student array
-//
-//
 void listAllStdnts()
 {
 	cout << " ------------------------ \n| Student(in) auflisten: |\n ------------------------ " << endl << endl;
 
 	sList->print();
 }
-
-
-//
-//
 //displays menu in console
-//
-//
 void dspMainMenu()
 {
 		cout << "1) Student(in) auflisten" << endl;
@@ -115,44 +91,27 @@ void dspMainMenu()
 		cout << "3) Student(in) suchen" << endl;
 		cout << "4) Student(in) bearbeiten" << endl;
 		cout << "5) Programmende" << endl << endl;
-
 		cout << "Auswahl: ";
 }
-
-//
-//
 //clears the console and displays the title
-//
-//
 void dspTitle()
 {
 	system("cls");
 	cout << "=========================================================\n ============ " << APPNAME << " ==== V" << VERSION << " ============ \n=========================================================" << endl << endl;
 }
-
-
-
-//
-//
 // delete single entry from list
-//
-//
 void editStdntData()
 {
 	Student *searchFor = NULL;
 	int matriculationNumber = 0;
-	int selection;
+	int selection = 0;
 
 	cout << " -------------------------- \n| Studierende bearbeiten: |\n -------------------------- " << endl << endl;
-
 	cout << "Geben Sie bitte die Matrikelnummer ein: " << endl;
-
 	cin >> matriculationNumber;
-
 	//start search at the first element
 	searchFor = sList->search(matriculationNumber);
-
-
+	//if found, display result
 	cout << "\nSuchergebnis: " << endl;
 	cout << "__________" << endl;
 	cout << "		Vorname:        " << searchFor->getFirstName()<< endl;
@@ -161,7 +120,7 @@ void editStdntData()
 	cout << "		Matrikelnummer: " << searchFor->getMatriculationNumber() << endl;
 	cout << "		Abschlussnote:  " << searchFor->getFinalGrade() << endl;
 	cout << "----------------------------------------------------" << endl << endl;
-
+	//chose onext step
 	cout << "\n1. Student bearbeiten" << endl;
 	cout << "2. Student loeschen" << endl;
 	cout << "3. Verlassen" << endl << endl;
@@ -172,17 +131,19 @@ void editStdntData()
 	{
 		switch (selection)
 		{
-		case 1:
-			cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer otherwise it won't work properly
+		case 1: //edit student data
+			cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer
 			searchFor->edit();
+			cout << "\n Neuer Datensatz:" << endl << endl;
+			searchFor->print();
 			break;
-		case 2:
+		case 2: //delete student from list
 			sList->remove(searchFor);
 			break;
-		case 3:
+		case 3: //exit
 			break;
-		default:
-			cout << "\nBitte geben Sie einen gültigen Menüpunkt an." << endl;
+		default: 
+			cout << "\nBitte geben Sie einen gültigen Menuepunkt an." << endl;
 		}
 	} while (selection < 1 || selection > 3);
 }

@@ -6,7 +6,6 @@
 #include <string>
 #include <iostream>
 
-
 class List
 {
 public:
@@ -19,9 +18,8 @@ public:
 	void print();
 	void importToCSV();
 	void exportToCSV();
-	void sort(Student* head, Student* next, int iteration);
-	Student* binary_search(Student* start, Student* end, int searchIndex, int matriculationNumber);
-	Student* linear_search(Student* start, int matriculationNumber);
+	void sort(Student* first, Student* second);
+	Student* search_linear(Student* start, int matriculationNumber);
 
 	//setter getter
 	void setHead(Student* student);
@@ -32,9 +30,10 @@ public:
 	int getListSize();
 	
 private:
-	Student *head, *tail; 
+	Student *head, *tail, *tmp_next, *tmp_prev;
 	static const std::string FILENAME_CSV;
-	int listSize;
+	int list_size;
+	bool bs_repeat;
 };
 
 
